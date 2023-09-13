@@ -355,9 +355,72 @@
 
     
 
+### 6. webpack的应用：将node环境下运行的第三方库，打包处理，生成静态页面，最终在浏览器中渲染
 
+#### 需求：点击登录按钮，基于 npm 下载 axios 包，完成验证码登录功能
 
+1. #### 使用 npm 下载 axios
 
+    ```bash
+    npm i axios
+    ```
+
+    
+
+2. 引入到 src/login/index.js 中,  并编写业务实现
+
+    ```js
+    /**
+     * 目标10：完成登录功能
+     *  10.1 使用 npm 下载 axios（体验 npm 作用在前端项目中）
+     *  10.2 准备并修改 utils 工具包源代码导出实现函数
+     *  10.3 导入并编写逻辑代码，打包后运行观察效果
+     */
+    // 10.3 导入并编写逻辑代码，打包后运行观察效果
+    import myAxios from '../utils/request.js'
+    import { myAlert } from '../utils/alert.js'
+    document.querySelector('.btn').addEventListener('click', () => {
+      const phone = document.querySelector('.login-form [name=mobile]').value
+      const code = document.querySelector('.login-form [name=code]').value
+    
+      if (!checkPhone(phone)) {
+        myAlert(false, '手机号长度必须是11位')
+        console.log('手机号长度必须是11位')
+        return
+      }
+    
+      if (!checkCode(code)) {
+        myAlert(false, '验证码长度必须是6位')
+        console.log('验证码长度必须是6位')
+        return
+      }
+    
+      myAxios({
+        url: '/v1_0/authorizations',
+        method: 'POST',
+        data: {
+          mobile: phone,
+          code: code
+        }
+      }).then(res => {
+        myAlert(true, '登录成功')
+        localStorage.setItem('token', res.data.token)
+        location.href = '../content/index.html'
+      }).catch(error => {
+        myAlert(false, error.response.data.message)
+      })
+    })
+    ```
+
+    
+
+3. #### 打包后观察 
+
+    ```bash
+    npm run build
+    ```
+
+    
 
 
 

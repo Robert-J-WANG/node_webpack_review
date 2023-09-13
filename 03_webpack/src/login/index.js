@@ -21,20 +21,20 @@ import { checkPhone, checkCode } from "../utils/check.js";
 // 3. 打包并手动复制网页到dist下，引入打包后的JS，运行
 
 // 2. 编写核心JS逻辑代码
-document.querySelector(".btn").addEventListener("click", () => {
-  const phone = document.querySelector(".login-form [name=mobile]").value;
-  const code = document.querySelector(".login-form [name=code]").value;
-  console.log(phone, code);
-  if (!checkPhone(phone)) {
-    console.log("手机号必须是11位");
-    return;
-  }
-  if (!checkCode(code)) {
-    console.log("手机号必须是6位");
-    return;
-  }
-  console.log("提交到服务器...");
-});
+// document.querySelector(".btn").addEventListener("click", () => {
+//   const phone = document.querySelector(".login-form [name=mobile]").value;
+//   const code = document.querySelector(".login-form [name=code]").value;
+//   console.log(phone, code);
+//   if (!checkPhone(phone)) {
+//     console.log("手机号必须是11位");
+//     return;
+//   }
+//   if (!checkCode(code)) {
+//     console.log("手机号必须是6位");
+//     return;
+//   }
+//   console.log("提交到服务器...");
+// });
 
 // 目标4： 使用插件 html-webpack-plugin 生成html网页文件，并引入打包后的其他资源
 // 1. 下载 html-webpack-plugin 插件本地软件包
@@ -82,3 +82,48 @@ const theImg = document.createElement("img");
 theImg.src = imgObj;
 document.querySelector(".login-wrap").appendChild(theImg);
 // 2. 重新打包观察效果
+
+/**
+ * 目标10：完成登录功能
+ *  10.1 使用 npm 下载 axios（体验 npm 作用在前端项目中）
+ *  10.2 准备并修改 utils 工具包源代码导出实现函数
+ *  10.3 导入并编写逻辑代码，打包后运行观察效果
+ */
+
+// 导入带有baseUrl的axios， 默认导入，可以自定义命名
+import myAxios from "../utils/request.js";
+// 导入myAlert模块， 命名导入，必须使用原名
+import { myAlert } from "../utils/alert.js";
+
+//  注册事件
+document.querySelector(".btn").addEventListener("click", () => {
+  const phone = document.querySelector(".login-form [name=mobile]").value;
+  const code = document.querySelector(".login-form [name=code]").value;
+  console.log(phone, code);
+  if (!checkPhone(phone)) {
+    myAlert(false, "手机号必须是11位");
+    console.log("手机号必须是11位");
+    return;
+  }
+  if (!checkCode(code)) {
+    myAlert(false, "验证码必须是6位");
+    console.log("验证码必须是6位");
+    return;
+  }
+  myAxios({
+    url: "/v1_0/authorizations",
+    method: "POST",
+    data: {
+      mobile: phone,
+      code: code,
+    },
+  })
+    .then((res) => {
+      myAlert(true, "登录成功");
+      // localStorage.setItem("token", res.data.token);
+      // location.href = "../content/index.html";
+    })
+    .catch((error) => {
+      myAlert(false, error.response.data.message);
+    });
+});
