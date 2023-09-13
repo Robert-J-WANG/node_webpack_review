@@ -4,6 +4,13 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports = {
+  // Webpack 打包模式
+  // mode: "development", // 推荐在package.json 中的命令行中设置
+  // "scripts": {
+  //   "build": "webpack --mode=production",
+  //   "dev": "webpack serve --open --mode=development"
+  // },
+
   // 1. 打包JS功能
   // 入口
   entry: path.resolve(__dirname, "src/login/index.js"),

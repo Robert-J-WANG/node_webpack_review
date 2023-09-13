@@ -127,3 +127,22 @@ document.querySelector(".btn").addEventListener("click", () => {
       myAlert(false, error.response.data.message);
     });
 });
+
+/**
+ * 目标11：配置开发服务器环境 webpack-dev-server
+ *  11.1 使用 npm 下载 webpack-dev-server
+ *  11.2 webpack.config中设置打包模式为开发模式， package.json中配置自定义命令
+ *  11.3 使用npm run dev 来启动开发服务器，试试热更新的效果
+ *
+ *  11.4 注意事项：
+ *      注意 1：webpack-dev-server借助 node.js 的 http 模块创建了默认为8080的web服务端口；
+ *      注意 2：默认以public文件夹作为服务器根目录；
+ *      注意 3：webpack-dev-server根据配置，打包了相关代码到内存当中，并且以 webpack.config中设置
+ *            的出口路径output.path的值作为服务器根目录（所以可以直接自己拼接访问dist目录下的内容）；
+ *      注意 4：优化方案： 直接自动跳转到打包文件，无需自己拼接
+ *            在public文件夹下创建index.html, 并在此文件中使用location.href跳转到指定文件连接
+ * 
+ * <script>
+    location.href = './login/index.html';
+  </script>
+ */

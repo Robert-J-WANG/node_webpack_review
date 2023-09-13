@@ -8,7 +8,7 @@
     npm init -y
     ```
 
-2. #### 下载 webpack webpack-cli 到项目（版本独立）
+2. #### 下载 webpack 和 webpack-cli 到项目（版本独立）
 
     ```bash
     npm i webpack webpack-cli --save-dev
@@ -353,9 +353,15 @@
     npm run build
     ```
 
-    
 
-### 6. webpack的应用：将node环境下运行的第三方库，打包处理，生成静态页面，最终在浏览器中渲染
+
+
+
+## webpack打包的应用：
+
+
+
+### 将node环境下运行的第三方库，打包处理，生成静态页面，最终在浏览器中渲染
 
 #### 需求：点击登录按钮，基于 npm 下载 axios 包，完成验证码登录功能
 
@@ -367,7 +373,7 @@
 
     
 
-2. 引入到 src/login/index.js 中,  并编写业务实现
+2. #### 引入到 src/login/index.js 中,  并编写业务实现
 
     ```js
     /**
@@ -421,6 +427,133 @@
     ```
 
     
+
+## Webpack 搭建开发环境
+
+### 目标：
+
+#### 体验 webpack-dev-server 开发服务器，快速开发应用程序
+
+### 讲解：
+
+1. #### 每次改动代码，都要重新打包，很麻烦，所以这里给项目集成 webpack-dev-server 开发服务器
+
+2. #### 作用：启动 Web 服务，打包输出源码在内存，并会自动检测代码变化热更新到网页；
+
+### 步骤：
+
+1. #### 下载 webpack-dev-server 软件包到当前项目
+
+    ```bash
+    npm i webpack-dev-server --save-dev
+    ```
+
+2. #### 配置自定义命令，并设置打包的模式为开发模式
+
+    ```js
+    //  webpack.config中设置打包模式为开发模式
+    
+    // ...
+    module.exports = {
+      // ...
+      mode: 'development'
+    }
+    ```
+
+    ```js
+    //  package.json中配置自定义命令
+    "scripts": {
+      // ...
+      "dev": "webpack serve --open"
+    },
+    ```
+
+3. #### 使用 npm run dev 来启动开发服务器，访问提示的域名+端口号，在浏览器访问打包后的项目网页，修改代码后试试热更新效果
+
+    ```js
+    热更新: 在 js / css 文件中修改代码保存后，会实时反馈到浏览器
+    ```
+
+4. #### 注意事项
+
+    ```js
+    /**
+     *      注意 1：webpack-dev-server借助 node.js 的 http 模块创建了默认为8080的web服务端口；
+     *      注意 2：默认以public文件夹作为服务器根目录；
+     *      注意 3：webpack-dev-server根据配置，打包了相关代码到内存当中，并且以 webpack.config中设置
+     *                     的出口路径output.path的值作为服务器根目录（所以可以直接自己拼接访问dist目录下的内容）；
+     *      注意 4：优化方案： 直接自动跳转到打包文件，无需自己拼接
+     *                     在public文件夹下创建index.html, 并在此文件中使用location.href跳转到指定文件连接
+     * 
+     *		 <script>
+            	location.href = './login/index.html';
+      		</script>
+     */
+    ```
+
+     
+
+## Webpack开发模式及应用
+
+### Webpack开发模式
+
+#### 目标
+
+##### 了解不同打包模式对代码和环境的影响
+
+#### 讲解
+
+1. ##### [打包模式](https://webpack.docschina.org/configuration/mode/)：告知 Webpack 使用相应模式的内置优化
+
+2. ##### 分类：
+
+    | **模式名称** | **模式名字** | **特点**                         | 场景     |
+    | ------------ | ------------ | -------------------------------- | -------- |
+    | 开发模式     | development  | 调试代码，实时加载，模块热替换等 | 本地开发 |
+    | 生产模式     | production   | 压缩代码，资源优化，更轻量等     | 打包上线 |
+
+3. ##### 如何设置影响 Webpack呢？
+
+    - ##### 方式1：在 webpack.config.js 配置文件设置 mode 选项
+
+        ```js
+        // ...
+        
+        module.exports = {
+          // ...
+          mode: 'production'
+        }
+        ```
+
+        
+
+    - ##### 方式2 (推荐使用）：在 package.json 命令行设置 mode 参数
+
+        ```js
+        "scripts": {
+          "build": "webpack --mode=production",
+          "dev": "webpack serve --open --mode=development"
+        },
+        ```
+
+        
+
+4. ##### 注意：命令行设置的优先级高于配置文件中的，推荐用命令行设置
+
+5. ##### 体验：在 build 命令后 修改 mode 的值，打包输出观察打包后的 js 文件内容
+
+    1.  production模式：极致压缩js代码，注重项目体积更小，更轻量，适配不同的浏览器环境
+    2. development模式： 分解压缩js代码为一块一块的，注重代码热替换更快，让开发调试代码更便捷
+
+### 应用
+
+
+
+
+
+
+
+
 
 
 
