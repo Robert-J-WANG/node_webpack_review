@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports = {
+  // 1. 打包JS功能
   // 入口
   entry: path.resolve(__dirname, "src/login/index.js"),
   // 出口
@@ -14,7 +15,7 @@ module.exports = {
   },
   // 插件：给webpack提供更多功能
   plugins: [
-    // 打包HTML文件的插件
+    // 2. 打包HTML文件的插件
     new HtmlWebpackPlugin({
       title: "My App",
       template: path.resolve(__dirname, "public/login.html"), // 以这个路径下的login.html文件问模版，输出打包后生成的html文件
@@ -38,6 +39,14 @@ module.exports = {
       {
         test: /\.less$/i,
         use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+      },
+      // 资源模块（图片）的规则列表
+      {
+        test: /\.(png|jpg|jpeg|gif)$/i,
+        type: "asset", //  在导出一个 data URI 和发送一个单独的文件之间自动选择(8kb为界)
+        generator: {
+          filename: "assets/[hash][ext][query]",
+        },
       },
     ],
   },

@@ -73,3 +73,12 @@ import "./indexLess.less";
 // npm i --save-dev less less-loader
 // 3. 配置webpack.config.js,
 // 4. 重新打包观察效果
+
+// 目标9： 打包资源模块（图片）,
+// 1. 创建img标签，并动态添加到页面，配置webpack.config.js里的资源模块
+// 注意： js中引入本地图片资源要用import方式（如果是网络图片http地址，字符串可以直接写）
+import imgObj from "./assets/logo.png";
+const theImg = document.createElement("img");
+theImg.src = imgObj;
+document.querySelector(".login-wrap").appendChild(theImg);
+// 2. 重新打包观察效果

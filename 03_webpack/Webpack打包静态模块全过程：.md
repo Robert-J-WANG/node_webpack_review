@@ -285,5 +285,83 @@
 
     
 
-### 5. 打包图片，音频，视频等资源模块：
+### 5. 打包图片，字体，文档，音频，视频等资源模块：
+
+#### 使用内置的资源模块，不需要下载额外的加载器或插件
+
+1. #### 准备图片资源: 在 src/login/index.js 中给 img 标签添加 logo 图片
+
+    ```js
+    /**
+     * 目标9：打包资源模块（图片处理）
+     *  9.1 创建 img 标签并动态添加到页面，配置 webpack.config.js
+     *  9.2 打包后观察效果和区别
+     */
+    // 9.1 创建 img 标签并动态添加到页面，配置 webpack.config.js
+    // 注意：js 中引入本地图片资源要用 import 方式（如果是网络图片http地址，字符串可以直接写）
+    import imgObj from './assets/logo.png'
+    const theImg = document.createElement('img')
+    theImg.src = imgObj
+    document.querySelector('.login-wrap').appendChild(theImg)
+    ```
+
+    
+
+2. #### 配置 webpack.config.js 让 Webpack 拥有打包图片功能
+
+    ```js
+    // ...
+    
+    module.exports = {
+      // ...
+      module: {
+        rules: [
+          // ...
+          {
+            test: /\.(png|jpg|jpeg|gif)$/i,
+            type: 'asset',    // 在导出一个 data URI 和发送一个单独的文件之间自动选择(8kb为界)
+            generator: {
+              filename: 'assets/[hash][ext][query]'
+            }
+          }
+        ]
+      }
+    }
+    ```
+
+3. #### 配置项的解释
+
+    ```java
+    配置 webpack.config.js 让 Webpack 拥有打包图片功能
+    
+    占位符 【hash】对模块内容做算法计算，得到映射的数字字母组合的字符串
+    
+    占位符 【ext】使用当前模块原本的占位符，例如：.png / .jpg 等字符串
+    
+    占位符 【query】保留引入文件时代码中查询参数（只有 URL 下生效）
+    
+    注意：判断临界值默认为 8KB
+    
+    大于 8KB 文件：发送一个单独的文件并导出 URL 地址
+    
+    小于 8KB 文件：导出一个 data URI（base64字符串）
+    ```
+
+4. #### 打包后观察 
+
+    ```bash
+    npm run build
+    ```
+
+    
+
+
+
+
+
+
+
+
+
+
 
