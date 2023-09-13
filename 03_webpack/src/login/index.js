@@ -68,7 +68,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // 目标8： 打包less文件,
 // 1. 新建less代码（设置背景图片） 并引入到src/login/index.js中
-// import "./index.less";
+import "./indexLess.less";
 // 2. 下载 本地软件包 less 和 less-loader
 // npm i --save-dev less less-loader
 // 3. 配置webpack.config.js,

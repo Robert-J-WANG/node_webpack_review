@@ -34,11 +34,11 @@ module.exports = {
         use: [MiniCssExtractPlugin.loader, "css-loader"], // 使用插件，打包成单独的css文件
       },
 
-      // // less模块的规则列表
-      // {
-      //   test: /\.less$/i,
-      //   use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
-      // },
+      // less模块的规则列表
+      {
+        test: /\.less$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+      },
     ],
   },
 

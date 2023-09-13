@@ -272,8 +272,10 @@
 
     ```js
     // 8.1 新建 less 代码（设置背景图）并引入到 src/login/index.js 中
-    import './index.less'
+    import './indexLess.less'
     ```
+
+##### 	注意： less文件保存时会自动生成同名的css文件，防止之前的index.css文件被替换，less文件使用其他名字（indexLess.less）
 
 4. #### 打包后观察 
 
