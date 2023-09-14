@@ -120,8 +120,9 @@ document.querySelector(".btn").addEventListener("click", () => {
   })
     .then((res) => {
       myAlert(true, "登录成功");
-      // localStorage.setItem("token", res.data.token);
-      // location.href = "../content/index.html";
+      // 登录成功后跳转页面，并存储token到本地
+      localStorage.setItem("token", res.data.token);
+      location.href = "../content/index.html";
     })
     .catch((error) => {
       myAlert(false, error.response.data.message);

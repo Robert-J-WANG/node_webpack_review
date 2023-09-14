@@ -874,5 +874,53 @@
 
     
 
+## webpack 多页面的打包
 
+### 目标
+
+#### 让 Webpack 同时打包登录和内容列表页面
+
+### 讲解
+
+1. #### 概念：[单页面](https://developer.mozilla.org/zh-CN/docs/Glossary/SPA)：单个 html 文件，切换 DOM 的方式实现不同业务逻辑展示，后续 Vue/React 会学到
+
+    #### 多页面：多个 html 文件，切换页面实现不同业务逻辑展示
+
+2. #### 需求：把黑马头条-数据管理平台-内容页面一起引入打包使用
+
+3. #### 步骤：
+
+    1. ##### 准备源码（html，css，js）放入相应位置，并改用模块化语法导出
+
+    2. ##### 下载 form-serialize 包并导入到核心代码中使用
+
+    3. ##### 配置 webpack.config.js 多入口和多页面的设置
+
+        ```js
+        // ...
+        const config = {
+          entry: {
+            '模块名1': path.resolve(__dirname, 'src/入口1.js'),
+            '模块名2': path.resolve(__dirname, 'src/入口2.js'),
+          },
+          output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: './[name]/index.js'  
+          }
+          plugins: [
+            new HtmlWebpackPlugin({
+              template: './public/页面2.html', // 模板文件
+              filename: './路径/index.html', // 输出文件
+              chunks: ['模块名2']
+            })
+            new HtmlWebpackPlugin({
+              template: './public/页面2.html', // 模板文件
+              filename: './路径/index.html', // 输出文件
+              chunks: ['模块名2']
+            })
+          ]
+        }
+        ```
+
+    4. ##### 重新打包观察效果
 

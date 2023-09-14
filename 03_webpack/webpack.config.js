@@ -14,11 +14,16 @@ const config = {
 
   // 1. 打包JS功能
   // 入口
-  entry: path.resolve(__dirname, "src/login/index.js"),
+  // entry: path.resolve(__dirname, "src/login/index.js"),
+  entry: {
+    login: path.resolve(__dirname, "src/login/index.js"),
+    content: path.resolve(__dirname, "src/content/index.js"),
+  },
   // 出口
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "./login/index.js",
+    // filename: "./login/index.js",
+    filename: "./[name]/index.js",
     clean: true, // 生产打包文件之前，清空之前的打包路劲
   },
 
@@ -29,14 +34,25 @@ const config = {
       title: "My App",
       template: path.resolve(__dirname, "public/login.html"), // 以这个路径下的login.html文件问模版，输出打包后生成的html文件
       filename: path.resolve(__dirname, "dist/login/index.html"), // 打包后生成的html文件路径
-
       // 自定义属性，在 html 模板中 <%=htmlWebpackPlugin.options.useCdn%> 访问使用
       useCdn: process.env.NODE_ENV === "production",
+      chunks: ["login"], // 引入哪些打包后的模块（和 entry 的 key 一致）
     }),
+
+    new HtmlWebpackPlugin({
+      title: "My App",
+      template: path.resolve(__dirname, "public/content.html"), // 以这个路径下的login.html文件问模版，输出打包后生成的html文件
+      filename: path.resolve(__dirname, "dist/content/index.html"), // 打包后生成的html文件路径
+      // 自定义属性，在 html 模板中 <%=htmlWebpackPlugin.options.useCdn%> 访问使用
+      useCdn: process.env.NODE_ENV === "production",
+      chunks: ["content"], // 引入哪些打包后的模块（和 entry 的 key 一致）
+    }),
+
     // 3. 打包css文件的插件
     new MiniCssExtractPlugin(
       // 可以设置打包完的scc文件的输出位置，默认的是dist/main.css
-      { filename: "./login/index.css" } // 只能使用相对路径
+      // { filename: "./login/index.css" } // 只能使用相对路径
+      { filename: "./[name]/index.css" } // 只能使用相对路径
     ),
     // webpack内置的插件，给前端注入node.js中的环境变量
     new webpack.DefinePlugin({
