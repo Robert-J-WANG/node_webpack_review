@@ -1,3 +1,5 @@
+
+
 ## Webpack打包静态模块全过程：
 
 ### 0. 打包前准备工作：
@@ -547,15 +549,16 @@
 5. ##### 体验：在 build 命令后 修改 mode 的值，打包输出观察打包后的 js 文件内容
 
     1.  production模式：极致压缩js代码，注重项目体积更小，更轻量，适配不同的浏览器环境
+
     2. development模式： 分解压缩js代码为一块一块的，注重代码热替换更快，让开发调试代码更便捷
 
-### 应用
+        
 
-#### 目标
+### 应用 1: 根据打包模式，配置样式表模块的打包方式
 
-##### 了解 Webpack 打包模式的应用
+#### 目标： 了解 Webpack 打包模式的应用
 
-#### 讲解
+#### 讲解：
 
 1. ##### 需求：在开发模式下用 style-loader 内嵌更快，在生产模式下提取 css 代码
 
@@ -582,8 +585,8 @@
     ```js
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "cross-env MODE_ENV=production webpack --mode=production",
-        "dev": "cross-env MODE_ENV=development webpack serve --open --mode=development"
+        "build": "cross-env NODE_ENV=production webpack --mode=production",
+        "dev": "cross-env NODE_ENV=development webpack serve --open --mode=development"
       },
     ```
 
@@ -628,13 +631,131 @@
 
     
 
+### 应用 2: 根据打包模式，向前端注入环境变量
+
+#### 目标： 前端项目中，开发模式下打印语句生效，生产模式下打印语句失效
+
+#### 讲解
+
+1. ##### 需求：前端项目中，开发模式下打印语句生效，生产模式下打印语句失效
+
+2. ##### 问题：cross-env 设置的只在 Node.js 环境生效，前端代码无法访问 process.env.NODE_ENV
+
+3. ##### [解决](https://webpack.docschina.org/plugins/define-plugin)：使用 Webpack 内置的 DefinePlugin 插件
+
+4. ##### 作用：在编译时，将前端代码中匹配的变量名，替换为值或表达式
+
+5. ##### 配置 webpack.config.js 中给前端注入环境变量
+
+    ```js
+    // ...
+    const webpack = require('webpack')
+    
+    module.exports = {
+      // ...
+      plugins: [
+        // ...
+        new webpack.DefinePlugin({
+          // key 是注入到打包后的前端 JS 代码中作为全局变量
+          // value 是变量对应的值（在 corss-env 注入在 node.js 中的环境变量字符串）
+          'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+        })
+      ]
+    }
+    ```
+
+6. ##### 逻辑代码： 在入口js文件中编写：
+
+    ```js
+    if (process.env.NODE_ENV === "production") {
+      console.log = () => {};
+    }
+    console.log("开发模式下打印语句生效，生成模式下打印语句失效");
+    ```
+
+7. ##### 重新打包观察两种配置区别
+
+    ```bash
+    npm run build
+    ```
+
+    ```bash
+    npm run dev
+    ```
 
 
 
 
 
+## Webpack的优化
 
 
+
+### 优化 1： 设置调试错误功能
+
+#### 目标：在开发环境如何精准定位到报错源码位置
+
+#### 讲解
+
+1. ##### source map：可以准确追踪 error 和 warning 在原始代码的位置
+
+2. ##### 问题：代码被压缩和混淆，无法正确定位源代码位置（行数和列数）
+
+3. ##### 设置：webpack.config.js 配置 devtool 选项
+
+    ```js
+    // ...
+    
+    module.exports = {
+      // ...
+      devtool: 'inline-source-map'    // inline-source-map 选项：把源码的位置信息一起打包在 JS 文件内
+    }
+    ```
+
+4. ##### 注意：source map 适用于开发环境，不要在生产环境使用（防止被轻易查看源码位置）
+
+    ##### 	可以根据环境变量 ( process.env.NODE_ENV ) 的不同，决定是否开启此功能: 重新构建webpack.config.js代码结构
+
+    ```js
+    const config = {
+      // 1. 打包JS功能
+      // 入口
+      entry: path.resolve(__dirname, "src/login/index.js"),
+      // 出口
+      output: {
+        // ...
+      },
+    
+      // 插件：给webpack提供更多功能
+      plugins: [
+       // ...
+      ],
+    
+      // 加载器, 让webpack能打包跟多类型的模块
+      module: {
+       // ...
+      },
+    
+      // 优化打包
+      optimization: {
+      //...
+      },
+    };
+    
+    // 调试错误
+    if (process.env.NODE_ENV === "development") {
+      config.devtool = "inline-source-map";
+    }
+    module.exports = config;
+    ```
+
+5. ##### 入口文件中，创造一个错误，重新打包观察两种配置区别
+
+    ```js
+    consolee.warn("1111");
+    ```
+
+    
 
 
 

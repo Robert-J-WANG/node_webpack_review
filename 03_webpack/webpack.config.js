@@ -2,8 +2,9 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const webpack = require("webpack");
 
-module.exports = {
+const config = {
   // Webpack 打包模式
   // mode: "development", // 推荐在package.json 中的命令行中设置, 如下所示：
   // "scripts": {
@@ -20,6 +21,7 @@ module.exports = {
     filename: "./login/index.js",
     clean: true, // 生产打包文件之前，清空之前的打包路劲
   },
+
   // 插件：给webpack提供更多功能
   plugins: [
     // 2. 打包HTML文件的插件
@@ -33,6 +35,12 @@ module.exports = {
       // 可以设置打包完的scc文件的输出位置，默认的是dist/main.css
       { filename: "./login/index.css" } // 只能使用相对路径
     ),
+    // webpack内置的插件，给前端注入node.js中的环境变量
+    new webpack.DefinePlugin({
+      // key 是注入到打包后的前端 JS 代码中作为全局变量
+      // value 是变量对应的值（在 corss-env 注入在 node.js 中的环境变量字符串）
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+    }),
   ],
 
   // 加载器, 让webpack能打包跟多类型的模块
@@ -53,7 +61,7 @@ module.exports = {
         // 成产模式：使用 style-loader方式；
         // 开发模式：使用 MiniCssExtractPlugin.loader方式；
         use: [
-          process.env.MODE_ENV === "development"
+          process.env.NODE_ENV === "development"
             ? "style-loader"
             : MiniCssExtractPlugin.loader,
           "css-loader",
@@ -72,7 +80,7 @@ module.exports = {
         // 成产模式：使用 style-loader方式；
         // 开发模式：使用 MiniCssExtractPlugin.loader方式；
         use: [
-          process.env.MODE_ENV === "development"
+          process.env.NODE_ENV === "development"
             ? "style-loader"
             : MiniCssExtractPlugin.loader,
           "css-loader",
@@ -104,4 +112,14 @@ module.exports = {
       new CssMinimizerPlugin(), // 压缩打包后的css代码
     ],
   },
+
+  // 调试错误
+  // devtool: "inline-source-map",  // 根据开发模式动态添加，在外面设置
+  // inline-source-map 选项：把源码的位置信息一起打包在 JS 文件内
 };
+
+// 调试错误
+if (process.env.NODE_ENV === "development") {
+  config.devtool = "inline-source-map";
+}
+module.exports = config;

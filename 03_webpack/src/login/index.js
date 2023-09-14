@@ -181,30 +181,72 @@ document.querySelector(".btn").addEventListener("click", () => {
 
  *  13.3 在webpack.config中 调用做判断区分：
 
-  module: {
-    rules: [
-      // css模块的规则列表
-      {
-        // 成产模式：使用 style-loader方式； 
-        // 开发模式：使用 MiniCssExtractPlugin.loader方式； 
-        use: [
-          process.env.MODE_ENV === "production"
-            ? "style-loader"
-            : MiniCssExtractPlugin.loader,
-          "css-loader",
-        ],
-      },
+    module: {
+      rules: [
+        // css模块的规则列表
+        {
+          // 成产模式：使用 style-loader方式； 
+          // 开发模式：使用 MiniCssExtractPlugin.loader方式； 
+          use: [
+            process.env.MODE_ENV === "production"
+              ? "style-loader"
+              : MiniCssExtractPlugin.loader,
+            "css-loader",
+          ],
+        },
 
-      // less模块的规则列表
-      {
-        // 成产模式：使用 style-loader方式；
-        // 开发模式：使用 MiniCssExtractPlugin.loader方式；
-        use: [
-          process.env.MODE_ENV === "production"
-            ? "style-loader"
-            : MiniCssExtractPlugin.loader,
-          "css-loader",
-          "less-loader",
-        ],
-      },
+        // less模块的规则列表
+        {
+          // 成产模式：使用 style-loader方式；
+          // 开发模式：使用 MiniCssExtractPlugin.loader方式；
+          use: [
+            process.env.MODE_ENV === "production"
+              ? "style-loader"
+              : MiniCssExtractPlugin.loader,
+            "css-loader",
+            "less-loader",
+          ],
+        },
+      ]
+    }
  */
+
+/**
+ * 目标 14： 应用- 向前端注入环境变量
+ *  14.1 需求： 前端项目中， 开发模式下打印语句生效，生成模式下打印语句失效
+ *  14.2 使用 webpack内置的DefinePlugin 插件：
+ * 
+ *   plugins: [
+ * 
+      // webpack内置的插件，给前端注入node.js中的环境变量
+
+      new webpack.DefinePlugin({
+        // key 是注入到打包后的前端 JS 代码中作为全局变量
+        // value 是变量对应的值（在 corss-env 注入在 node.js 中的环境变量字符串）
+        "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+      }),
+    ],
+ * 
+ *  14.3 代码逻辑：
+ */
+// console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === "production") {
+  console.log = () => {};
+}
+console.log("开发模式下打印语句生效，生成模式下打印语句失效");
+
+/**
+ * 目标 15：webpack中调试代码错误
+ *  15.1 问题：打包后的 error和warning 代码的位置和源代码的位置对不上，不方便我们调试
+ *  15.2 解决： 启用webpack的source-map 资源地图功能
+ *  15.3 步骤：
+ *      1：webpack.config中设置 devtool 选项和值， 开启功能（注意：只在开发环境中使用）
+
+            module.exports = {
+              // ...
+              devtool: 'inline-source-map'
+            }
+ *      2：在代码中创造一个错误，并在开发环境中查看效果
+ */
+
+consolee.warn("1111");
