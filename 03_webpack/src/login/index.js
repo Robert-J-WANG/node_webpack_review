@@ -249,4 +249,50 @@ console.log("开发模式下打印语句生效，生成模式下打印语句失�
  *      2：在代码中创造一个错误，并在开发环境中查看效果
  */
 
-consolee.warn("1111");
+// consolee.warn("1111");
+
+/**
+ * 目标16：路径解析别名设置
+ *  作用：让我们前端代码引入路径更简单（而且使用绝度路径）
+ *  16.1 在 webpack.config.js 中配置 resolve.alias 选项
+ *
+    const config = {
+      // ...
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, 'src')
+        }
+      }
+    }
+ *  16.2 在代码中尝试并在开发环境和生产环境测试效果
+ */
+import yourAxios from "@/utils/request.js";
+// 对比之前的引入方式：
+// import yourAxios from "../utils/request.js";
+console.log(yourAxios);
+
+/**
+ * 目标17：第三方库使用 CDN 加载引入
+ *  17.1 在 html 中引入第三方库的 CDN 地址并用模板语法判断
+ * 
+ *   <% if(htmlWebpackPlugin.options.useCdn){ %>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+  <% } %>
+
+    <% if(htmlWebpackPlugin.options.useCdn){ %>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.min.js"></script>
+  <% } %> 
+
+ *  17.2 配置 webpack.config.js 中 externals 外部扩展选项（防止某些 import 的包被打包）
+  
+ *  17.3 两种模式下打包观察效果
+ */
+
+/**
+ * 目标18：多页面打包
+ *  18.1 准备源码（html，css，js）放入相应位置，并改用模块化语法导出
+ *  18.2 下载 form-serialize 包并导入到核心代码中使用（略过）
+ *  18.3 配置 webpack.config.js 多入口和多页面的设置
+ *  18.4 重新打包观察效果
+ */

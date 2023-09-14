@@ -757,9 +757,122 @@
 
     
 
+### 优化 2： 设置路径别名，方便我们引入目标模块
 
+#### 目标: 配置模块如何解析，创建 import 或 require 的别名，来确保模块引入变得更简单
 
+#### 讲解
 
+1. ##### 举例：原来路径如下：
+
+    ```js
+    import { checkPhone, checkCode } from '../src/utils/check.js'
+    ```
+
+    
+
+2. ##### 配置解析别名：在 webpack.config.js 中设置
+
+    ```js
+    // ...
+    
+    const config = {
+      // ...
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, 'src')
+        }
+      }
+    }
+    ```
+
+    
+
+3. ##### 这样我们以后，引入目标模块写的路径就更简单了
+
+    ```js
+    import { checkPhone, checkCode } from '@/utils/check.js'
+    ```
+
+    
+
+##### 4. 修改代码的路径后，重新打包观察效果是否正常！
+
+### 
+
+### 优化 3： 生产模式下使用CDN
+
+#### 目标：开发模式使用本地第三方库，生产模式下使用 CDN 加载引入
+
+#### 讲解
+
+1. ##### 需求：开发模式使用本地第三方库，生产模式下使用 CDN 加载引入
+
+2. ##### [CDN](https://developer.mozilla.org/zh-CN/docs/Glossary/CDN)[定义](https://developer.mozilla.org/zh-CN/docs/Glossary/CDN)：内容分发网络，指的是一组分布在各个地区的服务器
+
+3. ##### 作用：把静态资源文件/第三方库放在 CDN 网络中各个服务器中，供用户就近请求获取
+
+4. ##### 好处：减轻自己服务器请求压力，就近请求物理延迟低，配套缓存策略
+
+5. ##### 步骤：
+
+    1.在 html 中引入第三方库的 [CDN ](https://www.bootcdn.cn/)[地址](https://www.bootcdn.cn/)[ ](https://www.bootcdn.cn/)并用模板语法判断
+
+    ```html
+    <% if(htmlWebpackPlugin.options.useCdn){ %>
+        <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <% } %>
+    ```
+
+    ```html
+    <% if(htmlWebpackPlugin.options.useCdn){ %>
+        <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.min.js"></script>
+        <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/js/bootstrap.min.js"></script>
+      <% } %>
+    ```
+
+    
+
+    2.配置 webpack.config.js 中 [externals](https://webpack.docschina.org/configuration/externals) 外部扩展选项（防止某些 import 的包被打包）
+
+    ```js
+    // 生产环境下使用相关配置
+    if (process.env.NODE_ENV === 'production') {
+      // 外部扩展（让 webpack 防止 import 的包被打包进来）
+      config.externals = {
+        // key：import from 语句后面的字符串
+        // value：留在原地的全局变量（最好和 cdn 在全局暴露的变量一致）
+        'bootstrap/dist/css/bootstrap.min.css': 'bootstrap',
+        'axios': 'axios'
+      }
+    }
+    ```
+
+    
+
+    ```js
+    // ...
+    const config = {
+      // ...
+      plugins: [
+        new HtmlWebpackPlugin({
+          // ...
+          // 自定义属性，在 html 模板中 <%=htmlWebpackPlugin.options.useCdn%> 访问使用
+          useCdn: process.env.NODE_ENV === 'production'
+        })
+      ]
+    }
+    ```
+
+    
+
+    3.两种模式下打包观察效果
+
+    ```bash
+    npm run build
+    ```
+
+    
 
 
 

@@ -29,6 +29,9 @@ const config = {
       title: "My App",
       template: path.resolve(__dirname, "public/login.html"), // 以这个路径下的login.html文件问模版，输出打包后生成的html文件
       filename: path.resolve(__dirname, "dist/login/index.html"), // 打包后生成的html文件路径
+
+      // 自定义属性，在 html 模板中 <%=htmlWebpackPlugin.options.useCdn%> 访问使用
+      useCdn: process.env.NODE_ENV === "production",
     }),
     // 3. 打包css文件的插件
     new MiniCssExtractPlugin(
@@ -116,10 +119,27 @@ const config = {
   // 调试错误
   // devtool: "inline-source-map",  // 根据开发模式动态添加，在外面设置
   // inline-source-map 选项：把源码的位置信息一起打包在 JS 文件内
+
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
 };
 
 // 调试错误
 if (process.env.NODE_ENV === "development") {
   config.devtool = "inline-source-map";
+}
+
+// 生产环境下使用相关配置
+if (process.env.NODE_ENV === "production") {
+  // 外部扩展（让 webpack 防止 import 的包被打包进来）
+  config.externals = {
+    // key：import from 语句后面的字符串
+    // value：留在原地的全局变量（最好和 cdn 在全局暴露的变量一致）
+    "bootstrap/dist/css/bootstrap.min.css": "bootstrap",
+    axios: "axios",
+  };
 }
 module.exports = config;
