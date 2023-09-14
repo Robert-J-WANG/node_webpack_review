@@ -18,6 +18,7 @@ const config = {
   entry: {
     login: path.resolve(__dirname, "src/login/index.js"),
     content: path.resolve(__dirname, "src/content/index.js"),
+    publish: path.resolve(__dirname, "src/publish/index.js"),
   },
   // 出口
   output: {
@@ -46,6 +47,15 @@ const config = {
       // 自定义属性，在 html 模板中 <%=htmlWebpackPlugin.options.useCdn%> 访问使用
       useCdn: process.env.NODE_ENV === "production",
       chunks: ["content"], // 引入哪些打包后的模块（和 entry 的 key 一致）
+    }),
+
+    new HtmlWebpackPlugin({
+      title: "My App",
+      template: path.resolve(__dirname, "public/publish.html"), // 以这个路径下的login.html文件问模版，输出打包后生成的html文件
+      filename: path.resolve(__dirname, "dist/publish/index.html"), // 打包后生成的html文件路径
+      // 自定义属性，在 html 模板中 <%=htmlWebpackPlugin.options.useCdn%> 访问使用
+      useCdn: process.env.NODE_ENV === "production",
+      chunks: ["publish"], // 引入哪些打包后的模块（和 entry 的 key 一致）
     }),
 
     // 3. 打包css文件的插件
@@ -130,6 +140,25 @@ const config = {
       `...`,
       new CssMinimizerPlugin(), // 压缩打包后的css代码
     ],
+
+    // 分割提取多页面之间的公共代码，让公共部分只打包一次
+    splitChunks: {
+      chunks: "all", // 所有模块动态非动态移入的都分割分析
+      cacheGroups: {
+        // 分隔组
+        commons: {
+          // 抽取公共模块
+          minSize: 0, // 抽取的chunk最小大小字节
+          minChunks: 2, // 最小引用数
+          reuseExistingChunk: true, // 当前 chunk 包含已从主 bundle 中拆分出的模块，则它将被重用
+          name(module, chunks, cacheGroupKey) {
+            // 分离出模块文件名
+            const allChunksNames = chunks.map((item) => item.name).join("~"); // 模块名1~模块名2
+            return `./js/${allChunksNames}`; // 输出到 dist 目录下位置
+          },
+        },
+      },
+    },
   },
 
   // 调试错误
@@ -156,6 +185,8 @@ if (process.env.NODE_ENV === "production") {
     // value：留在原地的全局变量（最好和 cdn 在全局暴露的变量一致）
     "bootstrap/dist/css/bootstrap.min.css": "bootstrap",
     axios: "axios",
+    "form-serialize": "serialize",
+    "@wangeditor/editor": "wangEditor",
   };
 }
 module.exports = config;
