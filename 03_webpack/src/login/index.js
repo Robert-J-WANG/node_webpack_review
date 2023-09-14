@@ -146,3 +146,65 @@ document.querySelector(".btn").addEventListener("click", () => {
     location.href = './login/index.html';
   </script>
  */
+
+/**
+ * 目标 12：打包模式设置
+ *  12.1 development 模式： 用于调试代码，实时加载，模块热替换（快）
+ *  12.2 production 模式： 用于发布上线，极致压缩代码，优化资源，更轻量（小）
+ *  12.3 设置方式：
+ *      方式 1：webpack.config中设置 mode:development/production；
+ *      方式 2：package.json 中设置 自定义命令行
+ *      
+ *      "scripts": {
+            "test": "echo \"Error: no test specified\" && exit 1",
+            "build": "webpack --mode=production", 
+            "dev": "webpack serve --open --mode=development"，
+          }
+ *
+ */
+
+/**
+ * 目标 13：打包模式的应用： 变量区分两种模式
+ * 需求： 
+ *    开发模式： 使用style-loader加载器，内嵌css代码在js中，让热替换更快
+ *    生成模式： 使用smini-css-extract-plugin，提取css代码，让浏览器缓存和并行下载js和文件
+ * 步骤：
+ *  13.1 下载软件包 cross-env到本地
+ *  13.2 配置文件package.json的自定义命令，
+ *       传入参数名和值到process.env对象上（它是node.js的环境变量）
+ * 
+  *        "scripts": {
+              "test": "echo \"Error: no test specified\" && exit 1",
+              "build": "cross-env MODE_ENV=production webpack --mode=production",
+              "dev": "cross-env MODE_ENV=development webpack serve --open --mode=development"
+            },
+
+ *  13.3 在webpack.config中 调用做判断区分：
+
+  module: {
+    rules: [
+      // css模块的规则列表
+      {
+        // 成产模式：使用 style-loader方式； 
+        // 开发模式：使用 MiniCssExtractPlugin.loader方式； 
+        use: [
+          process.env.MODE_ENV === "production"
+            ? "style-loader"
+            : MiniCssExtractPlugin.loader,
+          "css-loader",
+        ],
+      },
+
+      // less模块的规则列表
+      {
+        // 成产模式：使用 style-loader方式；
+        // 开发模式：使用 MiniCssExtractPlugin.loader方式；
+        use: [
+          process.env.MODE_ENV === "production"
+            ? "style-loader"
+            : MiniCssExtractPlugin.loader,
+          "css-loader",
+          "less-loader",
+        ],
+      },
+ */

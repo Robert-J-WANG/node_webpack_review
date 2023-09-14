@@ -183,7 +183,11 @@
       },
       plugins: [
         // ...
-        new MiniCssExtractPlugin()
+       // 打包css文件的插件
+        new MiniCssExtractPlugin(
+          // 可以设置打包完的scc文件的输出位置，默认的是dist/main.css
+          { filename: "./login/index.css" } // 只能使用相对路径
+        ),
       ]
     };
     ```
@@ -546,6 +550,83 @@
     2. development模式： 分解压缩js代码为一块一块的，注重代码热替换更快，让开发调试代码更便捷
 
 ### 应用
+
+#### 目标
+
+##### 了解 Webpack 打包模式的应用
+
+#### 讲解
+
+1. ##### 需求：在开发模式下用 style-loader 内嵌更快，在生产模式下提取 css 代码
+
+2. ##### [方案](https://webpack.docschina.org/configuration/mode/)[1](https://webpack.docschina.org/configuration/mode/)：webpack.config.js 配置导出函数，但是局限性大（只接受 2 种模式）
+
+    ##### 方案2：借助 cross-env （跨平台通用）包命令，设置参数区分环境
+
+    ##### [方案](https://webpack.docschina.org/guides/production/)[3](https://webpack.docschina.org/guides/production/)：配置不同的 webpack.config.js （适用多种模式差异性较大情况）
+
+3. ##### 主要使用方案 2 尝试，其他方案可以结合点击跳转的官方文档查看尝试
+
+4. ##### 步骤：
+
+    1.下载 cross-env 软件包到当前项目
+
+    ```bash
+    npm i cross-env --save-dev
+    ```
+
+    
+
+    2.在 package.json 命令行设置，传入参数名和值（会绑定到 node.js 的 process.env 对象下）
+
+    ```js
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "cross-env MODE_ENV=production webpack --mode=production",
+        "dev": "cross-env MODE_ENV=development webpack serve --open --mode=development"
+      },
+    ```
+
+    
+
+    3.在 webpack.config.js 区分不同环境使用不同配置
+
+    ```js
+    module: {
+        rules: [
+            // 配置 css
+          {
+            test: /\.css$/i,
+            // use: ['style-loader', "css-loader"],
+            use: [process.env.NODE_ENV === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader, "css-loader"]
+          },
+              // 配置 less
+          {
+            test: /\.less$/i,
+            use: [
+              // compiles Less to CSS
+              process.env.NODE_ENV === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
+              'css-loader',
+              'less-loader',
+            ],
+          }
+        ],
+      },
+    ```
+
+    
+
+    4.重新打包观察两种配置区别
+
+    ```bash
+    npm run build
+    ```
+
+    ```bash
+    npm run dev
+    ```
+
+    
 
 
 
